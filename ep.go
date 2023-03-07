@@ -81,8 +81,7 @@ func main() {
 		x[i] = -1.0e99
 	}
 
-	Mops := math.Log(math.Sqrt(math.Abs(math.Max(1.0, 1.0))))
-	fmt.Printf("%f Mops", Mops)
+	//Mops := math.Log(math.Sqrt(math.Abs(math.Max(1.0, 1.0)))) só serve pra timer
 
 	t1 := A
 	var t2 float64 = 0
@@ -102,7 +101,43 @@ func main() {
 
 	k_offset := -1
 
-	//fmt.Printf("t2: %f", t2)
+	//implement parallel area where random numbers are generated
 
-	//fmt.Printf("dum0 %f dum1 %f dum2 %f", dum[0], dum[1], dum2)
+	var sx_verify_value float64
+	var sy_verify_value float64
+	var sx_err float64
+	var sy_err float64
+
+	verified := true
+	if M == 24 {
+		sx_verify_value = -3.247834652034740e+3
+		sy_verify_value = -6.958407078382297e+3
+	} else if M == 25 {
+		sx_verify_value = -2.863319731645753e+3
+		sy_verify_value = -6.320053679109499e+3
+	} else if M == 28 {
+		sx_verify_value = -4.295875165629892e+3
+		sy_verify_value = -1.580732573678431e+4
+	} else if M == 30 {
+		sx_verify_value = 4.033815542441498e+4
+		sy_verify_value = -2.660669192809235e+4
+	} else if M == 32 {
+		sx_verify_value = 4.764367927995374e+4
+		sy_verify_value = -8.084072988043731e+4
+	} else if M == 36 {
+		sx_verify_value = 1.982481200946593e+5
+		sy_verify_value = -1.020596636361769e+5
+	} else if M == 40 {
+		sx_verify_value = -5.319717441530e+05
+		sy_verify_value = -3.688834557731e+05
+	} else {
+		verified = false
+	}
+	if verified {
+		sx_err = math.Abs((sx - sx_verify_value) / sx_verify_value)
+		sy_err = math.Abs((sy - sy_verify_value) / sy_verify_value)
+		verified = ((sx_err <= EPSILON) && (sy_err <= EPSILON))
+	}
+	//Mops = math.Pow(2.0, M+1) / tm / 1000000.0
+
 }
