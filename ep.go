@@ -101,12 +101,60 @@ func main() {
 
 	k_offset := -1
 
-	//implement parallel area where random numbers are generated
+	np := NN
+	kk := 0
+	ik := 0
+	var t3 float64
+	var t4 float64
+	var x1, x2 float64
+	var l float64
+	//cada interação desse loop for pode ser feita independentemente
+	//talvez chamar uma goroutine pra cada iteração do laço?
+	for k := 1; k <= np; k++ {
+		//implementar área paralela do EP
+		kk = k_offset + kk
+		t1 = S
+		t2 = an
+
+		/* find starting seed t1 for this kk */
+		for i := 1; i <= 100; i++ {
+			ik = kk / 2
+			if (2 * ik) != kk {
+				t3 = randlc(&t1, t2)
+			}
+			if ik == 0 {
+				break
+			}
+			t3 = randlc(&t2, t2)
+			kk = ik
+		}
+		vranlc(2*NK, &t1, A, x)
+
+		for i := 0; i < NK; i++ {
+			x1 = 2.0*x[2*i] - 1.0
+			x2 = 2.0*x[2*i+1] - 1.0
+			t1 = math.Pow(x1, 2) + math.Pow(x2, 2)
+			if t1 <= 1.0 {
+				t2 = math.Sqrt(-2.0 * math.Log(t1) / t1)
+				t3 = (x1 * t2)
+				t4 = (x2 * t2)
+				l = math.Max(math.Abs(t3), math.Abs(t4))
+				q[int(l)] += 1.0
+				sx = sx + t3
+				sy = sy + t4
+			}
+		}
+
+	}
 
 	var sx_verify_value float64
 	var sy_verify_value float64
 	var sx_err float64
 	var sy_err float64
+
+	for i := 0; i <= NQ-1; i++ {
+		gc = gc + q[i]
+	}
 
 	verified := true
 	if M == 24 {
