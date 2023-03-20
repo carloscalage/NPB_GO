@@ -145,6 +145,7 @@ func main() {
 				t3 = (x1 * t2)
 				t4 = (x2 * t2)
 				l = math.Max(math.Abs(t3), math.Abs(t4))
+				fmt.Printf("valor de l: %f \n", l)
 				q[int(l)] += 1.0
 				sx = sx + t3
 				sy = sy + t4
