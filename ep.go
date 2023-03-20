@@ -23,7 +23,7 @@ const A float64 = 1220703125.0
 const S = 271828183.0
 const NK_PLUS = ((2 * NK) + 1)
 
-var x = make([]float64, NK_PLUS) // x[NK_PLUS]
+// x[NK_PLUS]
 var q = make([]float64, NQ)
 
 func vranlc(n int, x_seed *float64, a float64, y []float64) {
@@ -78,9 +78,9 @@ func main() {
 	var wg sync.WaitGroup
 	dum[0] = randlc(&dum[1], dum2[0])
 
-	for i := 0; i < NK_PLUS; i++ {
-		x[i] = -1.0e99
-	}
+	//for i := 0; i < NK_PLUS; i++ {
+	//	x[i] = -1.0e99
+	//}
 
 	//Mops := math.Log(math.Sqrt(math.Abs(math.Max(1.0, 1.0)))) só serve pra timer
 
@@ -89,6 +89,11 @@ func main() {
 	for i := 0; i < MK+1; i++ {
 		t2 = randlc(&t1, t1)
 	}
+	func(shit float64) {
+		//se isso não for feito, a váriavel t2 é declarada como não usada pelo go.
+		//acontece que, se o códio onde o t2 recebe o falor de randlc for comentado, o EP não funciona
+		//isso pq é necessário que seja inicializada uma seed (com o t1).
+	}(t2)
 	an := t1
 	//tt := S
 	var gc float64 = 0.0
@@ -102,12 +107,6 @@ func main() {
 	k_offset := -1
 
 	np := NN
-	var kk int = 0
-	var ik int = 0
-	var t3 float64
-	var t4 float64
-	var x1, x2 float64
-	var l float64
 	//cada interação desse loop for pode ser feita independentemente
 	//talvez chamar uma goroutine pra cada iteração do laço?
 
@@ -118,7 +117,12 @@ func main() {
 		wg.Add(1)
 		//equivalente a um parallel for
 		go func(lk int) { //lk = versão local do k
-			kk = k_offset + lk
+
+			var x = make([]float64, NK_PLUS)
+			var t1, t2, t3, t4, x1, x2 float64
+			var l float64
+			var ik int
+			var kk int = k_offset + lk
 			t1 = S
 			t2 = an
 			//var qq = make([]float64, NQ) //cópia local do q
@@ -149,6 +153,7 @@ func main() {
 					t4 = (x2 * t2)
 					l = math.Max(math.Abs(t3), math.Abs(t4))
 					m.Lock()
+					//fmt.Printf("valor de L: %f \n", l)
 					q[int(l)] += 1.0
 
 					//qq[int(l)] += 1.0
