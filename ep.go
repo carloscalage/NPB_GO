@@ -74,7 +74,7 @@ func main() {
 	dum := []float64{1.0, 1.0}
 	dum2 := []float64{1.0}
 	vranlc(0, &dum[0], dum[1], dum2)
-	var m sync.Mutex
+	var m, m2 sync.Mutex
 	var wg sync.WaitGroup
 	dum[0] = randlc(&dum[1], dum2[0])
 
@@ -85,30 +85,19 @@ func main() {
 	//Mops := math.Log(math.Sqrt(math.Abs(math.Max(1.0, 1.0)))) só serve pra timer
 
 	t1 := A
-	var t2 float64 = 0
 	for i := 0; i < MK+1; i++ {
-		t2 = randlc(&t1, t1)
+		_ = randlc(&t1, t1)
 	}
-	func(shit float64) {
-		//se isso não for feito, a váriavel t2 é declarada como não usada pelo go.
-		//acontece que, se o códio onde o t2 recebe o falor de randlc for comentado, o EP não funciona
-		//isso pq é necessário que seja inicializada uma seed (com o t1).
-	}(t2)
+
 	an := t1
 	//tt := S
 	var gc float64 = 0.0
 	var sx float64 = 0.0
 	var sy float64 = 0.0
 
-	for i := 0; i <= NQ-1; i++ {
-		q[i] = 0.0 //acho q n precisa pq ele já inicializa com zero
-	}
-
 	k_offset := -1
 
 	np := NN
-	//cada interação desse loop for pode ser feita independentemente
-	//talvez chamar uma goroutine pra cada iteração do laço?
 
 	//fmt.Printf("valor do np: %d \n", np)
 	//fmt.Printf("valor do np: %d \n", np)
@@ -118,6 +107,7 @@ func main() {
 		//equivalente a um parallel for
 		go func(lk int) { //lk = versão local do k
 
+			var qq = make([]float64, NQ)
 			var x = make([]float64, NK_PLUS)
 			var t1, t2, t3, t4, x1, x2 float64
 			var l float64
@@ -152,22 +142,22 @@ func main() {
 					t3 = (x1 * t2)
 					t4 = (x2 * t2)
 					l = math.Max(math.Abs(t3), math.Abs(t4))
-					m.Lock()
-					//fmt.Printf("valor de L: %f \n", l)
-					q[int(l)] += 1.0
 
+					//fmt.Printf("valor de L: %f \n", l)
+					qq[int(l)] += 1.0
+					m.Lock()
 					//qq[int(l)] += 1.0
 					sx = sx + t3
 					sy = sy + t4
 					m.Unlock()
 				}
 			}
-			/*
-				for i := 0; i <= NQ-1; i++ {
-					m.Lock()
-					q[i] = q[i] + qq[i]
-					defer m.Unlock()
-				}*/
+
+			for i := 0; i <= NQ-1; i++ {
+				m2.Lock()
+				q[i] = q[i] + qq[i]
+				m2.Unlock()
+			}
 			defer wg.Done()
 		}(k)
 
@@ -177,12 +167,6 @@ func main() {
 	var sy_verify_value float64
 	var sx_err float64
 	var sy_err float64
-
-	wg.Wait()
-	for i := 0; i <= NQ-1; i++ {
-		gc = gc + q[i]
-	}
-	fmt.Printf("valor de Q com np = 1 %f \n", gc)
 
 	verified := true
 	if M == 24 {
@@ -208,6 +192,10 @@ func main() {
 		sy_verify_value = -3.688834557731e+05
 	} else {
 		verified = false
+	}
+	wg.Wait()
+	for i := 0; i <= NQ-1; i++ {
+		gc = gc + q[i]
 	}
 	if verified {
 		//fmt.Printf("\n VERIFIED \n")
