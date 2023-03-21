@@ -99,63 +99,77 @@ func main() {
 	var sx float64 = 0.0
 	var sy float64 = 0.0
 
-	k_offset := -1
-
 	np := NN
 
 	//fmt.Printf("valor do np: %d \n", np)
 	//fmt.Printf("valor do np: %d \n", np)
-
-	for k := 1; k <= np; k++ {
+	fmt.Printf("np = %d \n", np)
+	fmt.Printf("np per core = %d \n", np/8)
+	//var core int;
+	//start := core * 32
+	//end := core + 1 * 32
+	var cores = 8
+	for c := 0; c < 8; c++ { //octacore: cores 0, 1, 2, ..., 7
 		wg.Add(1)
-		//equivalente a um parallel for
-		go func(lk int) { //lk = versão local do k
+		go func(lc int) {
 
+			var sxl float64 = 0.0
+			var syl float64 = 0.0
 			var qq = make([]float64, NQ)
-			var x = make([]float64, NK_PLUS)
-			var t1, t2, t3, t4, x1, x2 float64
-			var l float64
-			var ik int
-			var kk int = k_offset + lk
-			t1 = S
-			t2 = an
-			//var qq = make([]float64, NQ) //cópia local do q
-			/* find starting seed t1 for this kk */
-			for i := 1; i <= 100; i++ {
-				ik = kk / 2
-				if (2 * ik) != kk {
-					t3 = randlc(&t1, t2)
 
-				}
-				if ik == 0 {
-					break
-				}
-				t3 = randlc(&t2, t2)
-				//fmt.Printf("t3 fater call break: %f, t2 after call break %f\n", t3, t2)
+			for jj := lc; jj < np/cores+lc+1; jj++ {
 
-				kk = ik
+				var x = make([]float64, NK_PLUS)
+				var t1, t2, t3, t4, x1, x2 float64
+				var l float64
+				var ik int
+				var kk int = jj
+
+				t1 = S
+				t2 = an
+
+				for i := 1; i <= 100; i++ {
+					ik = kk / 2
+					if (2 * ik) != kk {
+						t3 = randlc(&t1, t2)
+
+					}
+					if ik == 0 {
+						break
+					}
+					t3 = randlc(&t2, t2)
+					//fmt.Printf("t3 fater call break: %f, t2 after call break %f\n", t3, t2)
+
+					kk = ik
+				}
+				vranlc(2*NK, &t1, A, x)
+
+				for i := 0; i < NK; i++ {
+					x1 = 2.0*x[2*i] - 1.0
+					x2 = 2.0*x[2*i+1] - 1.0
+					t1 = math.Pow(x1, 2) + math.Pow(x2, 2)
+					if t1 <= 1.0 {
+						t2 = math.Sqrt(-2.0 * math.Log(t1) / t1)
+						t3 = (x1 * t2)
+						t4 = (x2 * t2)
+						l = math.Max(math.Abs(t3), math.Abs(t4))
+
+						//fmt.Printf("valor de L: %f \n", l)
+						qq[int(l)] += 1.0
+
+						//qq[int(l)] += 1.0
+						sxl = sxl + t3
+						syl = syl + t4
+
+					}
+				}
+
 			}
-			vranlc(2*NK, &t1, A, x)
 
-			for i := 0; i < NK; i++ {
-				x1 = 2.0*x[2*i] - 1.0
-				x2 = 2.0*x[2*i+1] - 1.0
-				t1 = math.Pow(x1, 2) + math.Pow(x2, 2)
-				if t1 <= 1.0 {
-					t2 = math.Sqrt(-2.0 * math.Log(t1) / t1)
-					t3 = (x1 * t2)
-					t4 = (x2 * t2)
-					l = math.Max(math.Abs(t3), math.Abs(t4))
-
-					//fmt.Printf("valor de L: %f \n", l)
-					qq[int(l)] += 1.0
-					m.Lock()
-					//qq[int(l)] += 1.0
-					sx = sx + t3
-					sy = sy + t4
-					m.Unlock()
-				}
-			}
+			m.Lock()
+			sx = sxl + sx
+			sy = syl + sy
+			m.Unlock()
 
 			for i := 0; i <= NQ-1; i++ {
 				m2.Lock()
@@ -163,10 +177,73 @@ func main() {
 				m2.Unlock()
 			}
 			defer wg.Done()
-		}(k)
 
+		}(c)
+
+		//-----------------------------------------------------------------------------------//
 	}
 
+	/*
+		for k := 0; k < np; k++ {
+			wg.Add(1)
+			//equivalente a um parallel for
+			go func(lk int) { //lk = versão local do k
+
+				var qq = make([]float64, NQ)
+				var x = make([]float64, NK_PLUS)
+				var t1, t2, t3, t4, x1, x2 float64
+				var l float64
+				var ik int
+				var kk int = lk
+				t1 = S
+				t2 = an
+				//var qq = make([]float64, NQ) //cópia local do q
+				for i := 1; i <= 100; i++ {
+					ik = kk / 2
+					if (2 * ik) != kk {
+						t3 = randlc(&t1, t2)
+
+					}
+					if ik == 0 {
+						break
+					}
+					t3 = randlc(&t2, t2)
+					//fmt.Printf("t3 fater call break: %f, t2 after call break %f\n", t3, t2)
+
+					kk = ik
+				}
+				vranlc(2*NK, &t1, A, x)
+
+				for i := 0; i < NK; i++ {
+					x1 = 2.0*x[2*i] - 1.0
+					x2 = 2.0*x[2*i+1] - 1.0
+					t1 = math.Pow(x1, 2) + math.Pow(x2, 2)
+					if t1 <= 1.0 {
+						t2 = math.Sqrt(-2.0 * math.Log(t1) / t1)
+						t3 = (x1 * t2)
+						t4 = (x2 * t2)
+						l = math.Max(math.Abs(t3), math.Abs(t4))
+
+						//fmt.Printf("valor de L: %f \n", l)
+						qq[int(l)] += 1.0
+						m.Lock()
+						//qq[int(l)] += 1.0
+						sx = sx + t3
+						sy = sy + t4
+						m.Unlock()
+					}
+				}
+
+				for i := 0; i <= NQ-1; i++ {
+					m2.Lock()
+					q[i] = q[i] + qq[i]
+					m2.Unlock()
+				}
+				defer wg.Done()
+			}(k)
+
+		}
+	*/
 	var sx_verify_value float64
 	var sy_verify_value float64
 	var sx_err float64
