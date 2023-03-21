@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math"
+	"os"
+	"strconv"
 )
 
 const r23 float64 = (0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5)
@@ -10,11 +12,13 @@ const r46 float64 = (r23 * r23)
 const t23 float64 = (2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0)
 const t46 float64 = (t23 * t23)
 
-const M = 24 //classe S
+var M, _ = strconv.ParseInt(os.Args[1], 10, 0)
 
 const MK = 16
-const MM = (M - MK)
-const NN = (1 << MM)
+
+var MM = (M - MK)
+var NN = (1 << MM)
+
 const NK = (1 << MK)
 const NQ = 10
 const EPSILON = 1.0e-8
