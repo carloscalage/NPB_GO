@@ -13,12 +13,15 @@ const r46 float64 = (r23 * r23)
 const t23 float64 = (2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0)
 const t46 float64 = (t23 * t23)
 
-var M, _ = strconv.ParseInt(os.Args[1], 10, 0) //classe é dinâmica
+var M, _ = strconv.ParseInt(os.Args[1], 10, 0)     //classe é dinâmica
+var cores, _ = strconv.ParseInt(os.Args[2], 10, 0) //cores são dinâmicos também
 
 const MK = 16
 
 var MM = (M - MK)
 var NN = (1 << MM)
+var np = NN
+var slicesize = np / int(cores)
 
 const NK = (1 << MK)
 const NQ = 10
@@ -82,34 +85,17 @@ func main() {
 	var wg sync.WaitGroup
 	dum[0] = randlc(&dum[1], dum2[0])
 
-	//for i := 0; i < NK_PLUS; i++ {
-	//	x[i] = -1.0e99
-	//}
-
-	//Mops := math.Log(math.Sqrt(math.Abs(math.Max(1.0, 1.0)))) só serve pra timer
-
 	t1 := A
 	for i := 0; i < MK+1; i++ {
 		_ = randlc(&t1, t1)
 	}
 
 	an := t1
-	//tt := S
 	var gc float64 = 0.0
 	var sx float64 = 0.0
 	var sy float64 = 0.0
 
-	np := NN
-
-	//fmt.Printf("valor do np: %d \n", np)
-	//fmt.Printf("valor do np: %d \n", np)
-	fmt.Printf("np = %d \n", np)
-	fmt.Printf("np per core = %d \n", np/8)
-	//var core int;
-	//start := core * 32
-	//end := core + 1 * 32
-	var cores = 8
-	for c := 0; c < 8; c++ { //octacore: cores 0, 1, 2, ..., 7
+	for c := 0; c < int(cores); c++ { //octacore: cores 0, 1, 2, ..., 7
 		wg.Add(1)
 		go func(lc int) {
 
@@ -117,7 +103,7 @@ func main() {
 			var syl float64 = 0.0
 			var qq = make([]float64, NQ)
 
-			for jj := lc; jj < np/cores+lc+1; jj++ {
+			for jj := lc * slicesize; jj < (lc*slicesize + slicesize); jj++ {
 
 				var x = make([]float64, NK_PLUS)
 				var t1, t2, t3, t4, x1, x2 float64
@@ -180,70 +166,7 @@ func main() {
 
 		}(c)
 
-		//-----------------------------------------------------------------------------------//
 	}
-
-	/*
-		for k := 0; k < np; k++ {
-			wg.Add(1)
-			//equivalente a um parallel for
-			go func(lk int) { //lk = versão local do k
-
-				var qq = make([]float64, NQ)
-				var x = make([]float64, NK_PLUS)
-				var t1, t2, t3, t4, x1, x2 float64
-				var l float64
-				var ik int
-				var kk int = lk
-				t1 = S
-				t2 = an
-				//var qq = make([]float64, NQ) //cópia local do q
-				for i := 1; i <= 100; i++ {
-					ik = kk / 2
-					if (2 * ik) != kk {
-						t3 = randlc(&t1, t2)
-
-					}
-					if ik == 0 {
-						break
-					}
-					t3 = randlc(&t2, t2)
-					//fmt.Printf("t3 fater call break: %f, t2 after call break %f\n", t3, t2)
-
-					kk = ik
-				}
-				vranlc(2*NK, &t1, A, x)
-
-				for i := 0; i < NK; i++ {
-					x1 = 2.0*x[2*i] - 1.0
-					x2 = 2.0*x[2*i+1] - 1.0
-					t1 = math.Pow(x1, 2) + math.Pow(x2, 2)
-					if t1 <= 1.0 {
-						t2 = math.Sqrt(-2.0 * math.Log(t1) / t1)
-						t3 = (x1 * t2)
-						t4 = (x2 * t2)
-						l = math.Max(math.Abs(t3), math.Abs(t4))
-
-						//fmt.Printf("valor de L: %f \n", l)
-						qq[int(l)] += 1.0
-						m.Lock()
-						//qq[int(l)] += 1.0
-						sx = sx + t3
-						sy = sy + t4
-						m.Unlock()
-					}
-				}
-
-				for i := 0; i <= NQ-1; i++ {
-					m2.Lock()
-					q[i] = q[i] + qq[i]
-					m2.Unlock()
-				}
-				defer wg.Done()
-			}(k)
-
-		}
-	*/
 	var sx_verify_value float64
 	var sy_verify_value float64
 	var sx_err float64
@@ -279,7 +202,6 @@ func main() {
 		gc = gc + q[i]
 	}
 	if verified {
-		//fmt.Printf("\n VERIFIED \n")
 		sx_err = math.Abs((sx - sx_verify_value) / sx_verify_value)
 		sy_err = math.Abs((sy - sy_verify_value) / sy_verify_value)
 		verified = ((sx_err <= EPSILON) && (sy_err <= EPSILON))
@@ -293,7 +215,5 @@ func main() {
 	for i := 0; i < NQ-1; i++ {
 		fmt.Printf("%3d%15.0f\n", i, q[i])
 	}
-
-	//Mops = math.Pow(2.0, M+1) / tm / 1000000.0
 
 }
