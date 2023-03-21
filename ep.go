@@ -11,7 +11,7 @@ const r46 float64 = (r23 * r23)
 const t23 float64 = (2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0)
 const t46 float64 = (t23 * t23)
 
-const M = 24 //classe S
+const M = 25 //classe S
 
 const MK = 16
 const MM = (M - MK)
