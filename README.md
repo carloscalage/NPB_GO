@@ -1,0 +1,6 @@
+To run:
+
+``sh run.sh``
+
+The file runs N interations of the same program. before running, edit class size, amount of cores avaliable, and amount of iterations in the .sh file.
+The 
