@@ -94,10 +94,6 @@ func main() {
 	var sx float64 = 0.0
 	var sy float64 = 0.0
 
-	for i := 0; i <= NQ-1; i++ {
-		q[i] = 0.0 //acho q n precisa pq ele já inicializa com zero
-	}
-
 	k_offset := -1
 
 	np := NN
@@ -145,7 +141,6 @@ func main() {
 				t3 = (x1 * t2)
 				t4 = (x2 * t2)
 				l = math.Max(math.Abs(t3), math.Abs(t4))
-				fmt.Printf("valor de l: %f \n", l)
 				q[int(l)] += 1.0
 				sx = sx + t3
 				sy = sy + t4
@@ -162,7 +157,6 @@ func main() {
 	for i := 0; i <= NQ-1; i++ {
 		gc = gc + q[i]
 	}
-	fmt.Printf("valor de Q com np = 1 %f \n", gc)
 
 	verified := true
 	if M == 24 {
