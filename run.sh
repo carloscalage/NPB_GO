@@ -16,11 +16,11 @@ N=20
 
 sum1=0
 
-
+C=28
 printf "Running serial EP\n"
 for i in $(seq 1 $N); do
     start=$(date +%s%N) #nanosegundos
-    go run ep.go 24
+    go run ep.go $C
     end=$(date +%s%N)    
     sum1=$((end-start))
 done
