@@ -13,8 +13,19 @@ const t46 float64 = (t23 * t23)
 var NUM_KEYS int
 var key_array []int
 var MAX_KEY int
+var MAX_KEY_LOG_2 int
+
 var SIZE_OF_BUFFERS int
 var NUM_BUCKETS int
+var NUM_BUCKETS_LOG_2 int
+var key_buff2 []int
+var key_buff1 []int
+var MAX_ITERATIONS int = 10
+var TEST_ARRAY_SIZE int = 5
+var partial_verify_vals []int
+var test_index_array []int
+
+var bucket_size [][]int
 
 const num_procs = 8
 
@@ -27,10 +38,8 @@ func main() {
 
 	TOTAL_KEYS := 0
 
-	MAX_ITERATIONS := 10
-	TEST_ARRAY_SIZE := 5
 	fmt.Printf("IS implementation \n")
-	var test_index_array []int
+
 	var test_rank_array []int
 
 	switch class {
@@ -80,12 +89,14 @@ func main() {
 	NUM_KEYS = TOTAL_KEYS
 	SIZE_OF_BUFFERS = NUM_KEYS
 	key_array = make([]int, SIZE_OF_BUFFERS)
+	key_buff2 = make([]int, SIZE_OF_BUFFERS)
+	key_buff1 = make([]int, MAX_KEY)
+	partial_verify_vals = make([]int, TEST_ARRAY_SIZE)
 
-	fmt.Printf("\nNUMKEYS do main: %d \n", NUM_KEYS)
 	use(key_array, MAX_KEY, MAX_KEY_LOG_2, SIZE_OF_BUFFERS, TEST_ARRAY_SIZE, MAX_ITERATIONS, NUM_BUCKETS_LOG_2, NUM_BUCKETS, test_index_array, test_rank_array)
 	create_seq(314159265.00, 1220703125.00)
 
-	//alloc_key_buff
+	alloc_key_buff()
 }
 
 func use(vals ...interface{}) { //só pra matar warning de variavel não usada durante desenvolvimento
@@ -180,4 +191,40 @@ func find_my_seed(kn int, np int, nn int64, s float64, a float64) float64 {
 	randlc(&t1, t2)
 
 	return t1
+}
+
+func alloc_key_buff() {
+
+	//use buckets
+	bucket_size = make([][]int, num_procs)
+	for i := 0; i < num_procs; i++ {
+		bucket_size[i] = make([]int, NUM_BUCKETS)
+	}
+
+}
+
+func rank(iteration int) {
+	var i, j, num_bucket_keys int
+	shift := MAX_KEY_LOG_2 - NUM_BUCKETS_LOG_2
+
+	num_bucket_keys = (1 << shift)
+
+	key_array[iteration] = iteration
+	key_array[iteration+MAX_ITERATIONS] = MAX_KEY - iteration
+
+	for i = 0; i < TEST_ARRAY_SIZE; i++ {
+		partial_verify_vals[i] = key_array[test_index_array[i]]
+	}
+
+	key_buff_ptr2 := key_buff2
+	key_buff_ptr := key_buff1
+
+	//START OF BUCKETS
+	for proc := 0; proc < num_procs; proc++ { // proc < 8
+		go func(myid int) {
+
+		}(proc)
+	}
+
+	use(i, j, shift, num_bucket_keys, key_buff_ptr2, key_buff_ptr)
 }
