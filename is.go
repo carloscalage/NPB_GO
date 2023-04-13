@@ -223,6 +223,17 @@ func rank(iteration int) {
 	for proc := 0; proc < num_procs; proc++ { // proc < 8
 		go func(myid int) {
 
+			var m, k1, k2 int
+
+			work_buff := bucket_size[myid]
+
+			/*determine the number of keys in each bucket*/
+			slicesize := NUM_KEYS / num_procs
+			for i := myid * slicesize; i < myid*slicesize+slicesize; i++ {
+				work_buff[key_array[i]>>shift] += 1
+			}
+
+			use(m, k1, k2, work_buff)
 		}(proc)
 	}
 
