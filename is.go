@@ -14,6 +14,7 @@ var NUM_KEYS int
 var key_array []int
 var MAX_KEY int
 var SIZE_OF_BUFFERS int
+var NUM_BUCKETS int
 
 const num_procs = 8
 
@@ -70,8 +71,8 @@ func main() {
 
 	}
 	fmt.Printf("%d \n", TOTAL_KEYS_LOG_2)
-	MAX_KEY := 1 << TOTAL_KEYS_LOG_2
-	NUM_BUCKETS := 1 << NUM_BUCKETS_LOG_2
+	MAX_KEY = 1 << MAX_KEY_LOG_2
+	NUM_BUCKETS = 1 << NUM_BUCKETS_LOG_2
 
 	TOTAL_KEYS = 1 << TOTAL_KEYS_LOG_2
 	fmt.Printf("TOTALKEYS: %d \n", TOTAL_KEYS)
@@ -84,9 +85,6 @@ func main() {
 	use(key_array, MAX_KEY, MAX_KEY_LOG_2, SIZE_OF_BUFFERS, TEST_ARRAY_SIZE, MAX_ITERATIONS, NUM_BUCKETS_LOG_2, NUM_BUCKETS, test_index_array, test_rank_array)
 	create_seq(314159265.00, 1220703125.00)
 
-	for i := 0; i < SIZE_OF_BUFFERS; i++ {
-		//println(i, ":", key_array[i])
-	}
 	//alloc_key_buff
 }
 
@@ -115,15 +113,11 @@ func create_seq(seed, a float64) {
 				k2 = NUM_KEYS
 			}
 
-			fmt.Printf(" \n NUMKEYS da func: %d \n", 4*NUM_KEYS)
-			//fmt.Printf("myid %d, num_procs %d, 4*num_keys %d, seed %f,  an %f \n", myid, num_procs, 4*NUM_KEYS, seed, an)
 			s = find_my_seed(myid,
 				num_procs,
 				int64(4*NUM_KEYS),
 				seed,
 				an)
-			fmt.Printf("%f at pos %d \n", s, myid)
-			//fmt.Printf("%f at pos  %d \n", s, myid)
 
 			k = MAX_KEY / 4
 
