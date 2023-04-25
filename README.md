@@ -1,6 +1,9 @@
 To run:
 
-``sh run.sh``
+``go run is_nopointer.go``
 
-The file runs N interations of the same program. before running, edit class size, amount of cores avaliable, and amount of iterations in the .sh file.
-The 
+pasta is_thrash: possui tentativas frustadas de implementar o IS com buckets e com coisas de ponteiros. Tem erro de out of bounds em vetor.
+
+arquivo is_nopointers.go:
+NÃO usa buckets e também não tem muito paralelismo. MAS executa até o final.
+Infelizmente, a verificação não funciona. Ele não consegue ordenar a segunda metade do array,
