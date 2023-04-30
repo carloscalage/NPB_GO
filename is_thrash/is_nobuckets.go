@@ -271,6 +271,11 @@ func rank(iteration int) {
 		(*work_buff)[i+1] += (*work_buff)[i]
 	}
 	/* Accumulate the global key population */
+	if myid == 0 {
+		for i := 0; i < MAX_KEY; i++ {
+			(key_buff_ptr)[i] += key_buff1_aptr[0][i]
+		}
+	}
 	for k := 1; k < num_procs; k++ {
 		for i := 0; i < MAX_KEY; i++ {
 			(key_buff_ptr)[i] += key_buff1_aptr[k][i]

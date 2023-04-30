@@ -255,11 +255,11 @@ func rank(iteration int) {
 	//var m, k1, k2 int
 	myid := 0
 
-	work_buff := &key_buff1_aptr[myid]
+	//key_buff1_aptr := &key_buff1_aptr[myid]
 
 	/* Clear the work array */
 	for i := 0; i < MAX_KEY; i++ {
-		(*work_buff)[i] = 0
+		key_buff1_aptr[myid][i] = 0
 	}
 
 	/* Ranking of all keys occurs in this section: */
@@ -267,15 +267,15 @@ func rank(iteration int) {
 	/* own indexes to determine how many of each there are: their */
 	/* individual population */
 	for i := 0; i < NUM_KEYS; i++ {
-		(*work_buff)[(key_buff_ptr2)[i]]++ /* Now they have individual key population */
+		key_buff1_aptr[myid][(key_buff_ptr2)[i]]++ /* Now they have individual key population */
 	}
 	for i := 0; i < MAX_KEY-1; i++ {
-		(*work_buff)[i+1] += (*work_buff)[i]
+		key_buff1_aptr[myid][i+1] += key_buff1_aptr[myid][i]
 	}
 	/* Accumulate the global key population */
 	for k := 1; k < num_procs; k++ {
 		for i := 0; i < MAX_KEY; i++ {
-			(key_buff_ptr)[i] += key_buff1_aptr[k][i]
+			key_buff_ptr[i] += key_buff1_aptr[k][i]
 		}
 	}
 
