@@ -408,6 +408,7 @@ func full_verify() {
 	k2 = k1 + j
 
 	if k2 > MAX_KEY {
+		//
 		k2 = MAX_KEY
 	}
 	for i := 0; i < NUM_KEYS; i++ {
