@@ -34,7 +34,7 @@ var key_buff1_aptr [][]int
 var bucket_ptrs [num_procs][]int
 
 var bucket_size [][]int
-var class = 'W'
+var class = 'S'
 
 func main() {
 
@@ -97,7 +97,7 @@ func main() {
 	key_buff1 = make([]int, MAX_KEY)
 	partial_verify_vals = make([]int, TEST_ARRAY_SIZE)
 
-	//use(key_array, MAX_KEY, MAX_KEY_LOG_2, SIZE_OF_BUFFERS, TEST_ARRAY_SIZE, MAX_ITERATIONS, NUM_BUCKETS_LOG_2, NUM_BUCKETS, test_index_array, test_rank_array)
+	use(key_array, MAX_KEY, MAX_KEY_LOG_2, SIZE_OF_BUFFERS, TEST_ARRAY_SIZE, MAX_ITERATIONS, NUM_BUCKETS_LOG_2, NUM_BUCKETS, test_index_array, test_rank_array)
 	create_seq(314159265.00, 1220703125.00)
 
 	//fmt.Printf("%v \n", key_array[500:550])
@@ -120,8 +120,10 @@ func main() {
 		}
 		rank(iteration)
 	}
-
+	fmt.Printf("\nsplitting\n")
+	//fmt.Printf("%v \n", key_array[500:550])
 	full_verify()
+	fmt.Printf("\nsplitting\n")
 	//fmt.Printf("%v \n", key_array[49200:49600])
 	/* the final printout */
 	if passed_verification != 5*MAX_ITERATIONS+1 {
@@ -253,11 +255,11 @@ func rank(iteration int) {
 	//var m, k1, k2 int
 	myid := 0
 
-	//key_buff1_aptr := &key_buff1_aptr[myid]
+	work_buff := &key_buff1_aptr[myid]
 
 	/* Clear the work array */
 	for i := 0; i < MAX_KEY; i++ {
-		key_buff1_aptr[myid][i] = 0
+		(*work_buff)[i] = 0
 	}
 
 	/* Ranking of all keys occurs in this section: */
@@ -265,15 +267,15 @@ func rank(iteration int) {
 	/* own indexes to determine how many of each there are: their */
 	/* individual population */
 	for i := 0; i < NUM_KEYS; i++ {
-		key_buff1_aptr[myid][(key_buff_ptr2)[i]]++ /* Now they have individual key population */
+		(*work_buff)[(key_buff_ptr2)[i]]++ /* Now they have individual key population */
 	}
 	for i := 0; i < MAX_KEY-1; i++ {
-		key_buff1_aptr[myid][i+1] += key_buff1_aptr[myid][i]
+		(*work_buff)[i+1] += (*work_buff)[i]
 	}
 	/* Accumulate the global key population */
 	for k := 1; k < num_procs; k++ {
 		for i := 0; i < MAX_KEY; i++ {
-			key_buff_ptr[i] += key_buff1_aptr[k][i]
+			(key_buff_ptr)[i] += key_buff1_aptr[k][i]
 		}
 	}
 
@@ -398,17 +400,15 @@ func full_verify() {
 	myid := 0
 
 	for i := 0; i < NUM_KEYS; i++ {
+		//fmt.Printf("key array is %d at i: %d \n", key_array[i], i)
 		key_buff2[i] = key_array[i]
-		//fmt.Printf("%d \n", key_buff2[i])
-
 	}
+
 	j = 1
-	j = (MAX_KEY + j - 1) / j
+	j = (MAX_KEY + j - 1) / 2
 	k1 = j * myid
 	k2 = k1 + j
-
 	if k2 > MAX_KEY {
-		//
 		k2 = MAX_KEY
 	}
 	for i := 0; i < NUM_KEYS; i++ {
@@ -422,20 +422,24 @@ func full_verify() {
 		}
 	}
 	j = 0
+	var indexoutoforder []int
 
 	//#pragma omp parallel for reduction(+:j)
 
-	//fmt.Printf("%v \n", key_array[65530:])
+	fmt.Printf("%v \n", key_array[65530:])
 	for i = 1; i < NUM_KEYS; i++ {
 		if key_array[i-1] > key_array[i] {
 			//fmt.Printf("pos: %d, bigger value: %d, smaller value: %d \n", i, key_array[i-1], key_array[i])
+			indexoutoforder = append(indexoutoforder, i)
 			j++
 		}
 	}
+
 	//fmt.Printf("%d is bigger than %d at pos %d \n", key_array[33065], key_array[33065+1], 33065)
 
 	if j != 0 {
-		//fmt.Printf("-- %v -- \n", indexoutoforder[:100])
+		fmt.Printf("amount of out of order: %d \n", len(indexoutoforder))
+		fmt.Printf("-- %v -- \n", indexoutoforder[:100])
 		fmt.Printf("\nFull_verify: number of keys out of sort: %d\n", j)
 	} else {
 		passed_verification++
