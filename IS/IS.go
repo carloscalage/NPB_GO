@@ -421,14 +421,11 @@ func full_verify() {
 		}
 	}
 	j = 0
-	var indexoutoforder []int
 
 	//#pragma omp parallel for reduction(+:j)
 
 	for i = 1; i < NUM_KEYS; i++ {
 		if key_array[i-1] > key_array[i] {
-			//fmt.Printf("pos: %d, bigger value: %d, smaller value: %d \n", i, key_array[i-1], key_array[i])
-			indexoutoforder = append(indexoutoforder, i)
 			j++
 		}
 	}
@@ -436,8 +433,6 @@ func full_verify() {
 	//fmt.Printf("%d is bigger than %d at pos %d \n", key_array[33065], key_array[33065+1], 33065)
 
 	if j != 0 {
-		fmt.Printf("amount of out of order: %d \n", len(indexoutoforder))
-		fmt.Printf("-- %v -- \n", indexoutoforder[:100])
 		fmt.Printf("\nFull_verify: number of keys out of sort: %d\n", j)
 	} else {
 		passed_verification++
