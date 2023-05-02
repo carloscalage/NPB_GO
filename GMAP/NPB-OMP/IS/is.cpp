@@ -540,10 +540,9 @@ void full_verify(){
 	for( i=1; i<NUM_KEYS; i++ )
 		if( key_array[i-1] > key_array[i] )
 			j++;
-	if( j != 0 )
+	if( j == 0 ) passed_verification++;
+
 		//printf( "Full_verify: number of keys out of sort: %ld\n", (long)j );
-	else
-		passed_verification++;
 }
 
 /*****************************************************************/
@@ -781,9 +780,7 @@ void rank(int iteration){
 							passed_verification++;
 					}
 					break;
-			}
-			if( failed == 1 )
-				
+			}				
 				
 		}
 	}
