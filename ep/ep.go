@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"os"
 	"strconv"
+	"sync"
 )
 
 const r23 float64 = (0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5 * 0.5)
@@ -12,12 +12,15 @@ const r46 float64 = (r23 * r23)
 const t23 float64 = (2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0)
 const t46 float64 = (t23 * t23)
 
-var M, _ = strconv.ParseInt(os.Args[1], 10, 0)
+var M, _ = strconv.ParseInt(os.Args[1], 10, 0)     //classe é dinâmica
+var cores, _ = strconv.ParseInt(os.Args[2], 10, 0) //cores são dinâmicos também
 
 const MK = 16
 
 var MM = (M - MK)
 var NN = (1 << MM)
+var np = NN
+var slicesize = np / int(cores)
 
 const NK = (1 << MK)
 const NQ = 10
@@ -26,13 +29,11 @@ const A float64 = 1220703125.0
 const S = 271828183.0
 const NK_PLUS = ((2 * NK) + 1)
 
-var x = make([]float64, NK_PLUS) // x[NK_PLUS]
-var q = make([]float64, NQ)      // x[NK_PLUS]
+var q = make([]float64, NQ)
 
 func vranlc(n int, x_seed *float64, a float64, y []float64) {
 	var i int
 	var x, t1, t2, t3, t4, a1, a2, x1, x2, z float64
-
 	t1 = r23 * a
 	a1 = float64(int(t1))
 	a2 = a - t23*a1
@@ -78,89 +79,90 @@ func main() {
 	dum := []float64{1.0, 1.0}
 	dum2 := []float64{1.0}
 	vranlc(0, &dum[0], dum[1], dum2)
-
+	var m, m2 sync.Mutex
+	var wg sync.WaitGroup
 	dum[0] = randlc(&dum[1], dum2[0])
 
-	for i := 0; i < NK_PLUS; i++ {
-		x[i] = -1.0e99
-	}
-
-	//Mops := math.Log(math.Sqrt(math.Abs(math.Max(1.0, 1.0)))) só serve pra timer
-
 	t1 := A
-	var t2 float64 = 0
 	for i := 0; i < MK+1; i++ {
-		t2 = randlc(&t1, t1)
+		_ = randlc(&t1, t1)
 	}
+
 	an := t1
-	//tt := S
 	var gc float64 = 0.0
 	var sx float64 = 0.0
 	var sy float64 = 0.0
 
-	k_offset := -1
+	for c := 0; c < int(cores); c++ {
+		wg.Add(1)
+		go func(lc int) {
+			var sxl float64 = 0.0
+			var syl float64 = 0.0
+			var qq = make([]float64, NQ)
+			for jj := lc * slicesize; jj < (lc*slicesize + slicesize); jj++ {
+				var x = make([]float64, NK_PLUS)
+				var t1, t2, t3, t4, x1, x2 float64
+				var l float64
+				var ik int
+				var kk int = jj
 
-	np := NN
-	var kk int = 0
-	var ik int = 0
-	var t3 float64
-	var t4 float64
-	var x1, x2 float64
-	var l float64
-	//cada interação desse loop for pode ser feita independentemente
-	//talvez chamar uma goroutine pra cada iteração do laço?
+				t1 = S
+				t2 = an
 
-	//fmt.Printf("valor do np: %d \n", np)
-	//fmt.Printf("valor do np: %d \n", np)
+				for i := 1; i <= 100; i++ {
+					ik = kk / 2
+					if (2 * ik) != kk {
+						t3 = randlc(&t1, t2)
 
-	for k := 1; k <= np; k++ {
-		//implementar área paralela do EP
-		kk = k_offset + k
-		t1 = S
-		t2 = an
+					}
+					if ik == 0 {
+						break
+					}
+					t3 = randlc(&t2, t2)
 
-		/* find starting seed t1 for this kk */
-		for i := 1; i <= 100; i++ {
-			ik = kk / 2
-			if (2 * ik) != kk {
-				t3 = randlc(&t1, t2)
+					kk = ik
+				}
+				vranlc(2*NK, &t1, A, x)
+
+				for i := 0; i < NK; i++ {
+					x1 = 2.0*x[2*i] - 1.0
+					x2 = 2.0*x[2*i+1] - 1.0
+					t1 = math.Pow(x1, 2) + math.Pow(x2, 2)
+					if t1 <= 1.0 {
+						t2 = math.Sqrt(-2.0 * math.Log(t1) / t1)
+						t3 = (x1 * t2)
+						t4 = (x2 * t2)
+						l = math.Max(math.Abs(t3), math.Abs(t4))
+
+						qq[int(l)] += 1.0
+
+						sxl = sxl + t3
+						syl = syl + t4
+
+					}
+				}
 
 			}
-			if ik == 0 {
-				break
-			}
-			t3 = randlc(&t2, t2)
-			//fmt.Printf("t3 fater call break: %f, t2 after call break %f\n", t3, t2)
 
-			kk = ik
-		}
-		vranlc(2*NK, &t1, A, x)
+			m.Lock()
+			sx = sxl + sx
+			sy = syl + sy
+			m.Unlock()
 
-		for i := 0; i < NK; i++ {
-			x1 = 2.0*x[2*i] - 1.0
-			x2 = 2.0*x[2*i+1] - 1.0
-			t1 = math.Pow(x1, 2) + math.Pow(x2, 2)
-			if t1 <= 1.0 {
-				t2 = math.Sqrt(-2.0 * math.Log(t1) / t1)
-				t3 = (x1 * t2)
-				t4 = (x2 * t2)
-				l = math.Max(math.Abs(t3), math.Abs(t4))
-				q[int(l)] += 1.0
-				sx = sx + t3
-				sy = sy + t4
+			for i := 0; i <= NQ-1; i++ {
+				m2.Lock()
+				q[i] = q[i] + qq[i]
+				m2.Unlock()
 			}
-		}
+			defer wg.Done()
+
+		}(c)
 
 	}
-
 	var sx_verify_value float64
 	var sy_verify_value float64
 	var sx_err float64
 	var sy_err float64
-
-	for i := 0; i <= NQ-1; i++ {
-		gc = gc + q[i]
-	}
 
 	verified := true
 	if M == 24 {
@@ -187,13 +189,16 @@ func main() {
 	} else {
 		verified = false
 	}
+	wg.Wait()
+	for i := 0; i <= NQ-1; i++ {
+		gc = gc + q[i]
+	}
 	if verified {
-		//fmt.Printf("\n VERIFIED \n")
 		sx_err = math.Abs((sx - sx_verify_value) / sx_verify_value)
 		sy_err = math.Abs((sy - sy_verify_value) / sy_verify_value)
 		verified = ((sx_err <= EPSILON) && (sy_err <= EPSILON))
 	}
-	fmt.Printf("\n VERIFIED: %t \n", verified)
+	/* fmt.Printf("\n VERIFIED: %t \n", verified)
 
 	fmt.Printf("M: %d \n", M)
 	fmt.Printf("pares gaussianos: %15.0f \n", gc)
@@ -202,7 +207,5 @@ func main() {
 	for i := 0; i < NQ-1; i++ {
 		fmt.Printf("%3d%15.0f\n", i, q[i])
 	}
-
-	//Mops = math.Pow(2.0, M+1) / tm / 1000000.0
-
+	*/
 }
