@@ -29,22 +29,44 @@
 # printf "time elapsed in nanoseconds: %0.0f, time elapsed in miliseconds: %0.1f\n" $avg $ml
 # printf "average time in seconds: %0.1f\n" $avgsec
 
-read -p "Qual kernel deseja executar? (EP, IS)" KERNEL
+read -p "Qual kernel deseja executar? (EP, IS): " KERNEL
 
-#read -p "Qual classe de problema deseja executar? (S, W, A, B, C, D, E)" CLASS
-CLASS="B"
+read -p "Qual classe de problema deseja executar? (S, W, A, B, C, D, E): " CLASS
 
-echo "Running $KERNEL in GO"
+read -p "Em qual linguagem deseja executar? (GO, C): " LANG
+
+file_name=`echo "print '$KERNEL'.lower()" | python`
+echo $file_name
+
+echo "Running $KERNEL - $CLASS in $LANG"
 
 N=30
 
 echo >> results/log.csv
 
-for i in $(seq 1 $N); do
-  echo $i
-  start=$(date +%s%N)
-  go run ${KERNEL}/${KERNEL}_serial.go $CLASS
-  end=$(date +%s%N) 
-  time=$((end-start))
-  echo "${KERNEL},${CLASS},serial,GO,${time}" >> results/log.csv
-done
+if [ $LANG == "GO" ];
+    then
+        for i in $(seq 1 $N); do
+        echo $i
+        start=$(date +%s%N)
+        go run ${KERNEL}/${KERNEL}_serial.go $CLASS
+        end=$(date +%s%N) 
+        time=$((end-start))
+        echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
+        done
+fi
+
+if [ $LANG == "C" ];
+    then
+        cd GMAP/NPB-SER
+        make clean
+        make ${KERNEL}
+        for i in $(seq 1 $N); do
+        echo $i
+        start=$(date +%s%N)
+        ./bin/${KERNEL}.${CLASS}
+        end=$(date +%s%N) 
+        time=$((end-start))
+        echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
+        done
+fi
