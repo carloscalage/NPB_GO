@@ -29,7 +29,7 @@ for CLASS in S W A B C D E; do
     if [ $LANG = C ]; then
             cd GMAP/NPB-OMP
             make clean
-            make ${KERNEL}
+            make ${KERNEL} CLASS=${CLASS}
             for i in $(seq 1 $N); do
             echo $i
             start=$(date +%s%N)
