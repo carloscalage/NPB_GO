@@ -36,6 +36,7 @@ for CLASS in S W A B C D E; do
             ./bin/is.${CLASS} >> output.txt
             end=$(date +%s%N) 
             time=$((end-start))
+            cd ../../
             echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
             done
     fi
