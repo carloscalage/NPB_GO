@@ -7,7 +7,6 @@
 # #D = 36
 # #E = 40
 
-
 # #rodando o programa 20 vezes
 # N=20
 
@@ -32,18 +31,20 @@
 
 read -p "Qual kernel deseja executar? (EP, IS)" KERNEL
 
-read -p "Qual classe de problema deseja executar? (S, W, A, B, C, D, E)" CLASS
+#read -p "Qual classe de problema deseja executar? (S, W, A, B, C, D, E)" CLASS
+CLASS="B"
 
 echo "Running $KERNEL in GO"
 
-N = 30
+N=30
+
+echo >> results/log.csv
 
 for i in $(seq 1 $N); do
   echo $i
-  start=$(date +%s%N/1000000)
+  start=$(date +%s%N)
   go run ${KERNEL}/${KERNEL}_serial.go $CLASS
-  end=$(date +%s%N/1000000) 
+  end=$(date +%s%N) 
   time=$((end-start))
-  echo >> results/log.csv
   echo "${KERNEL},${CLASS},serial,GO,${time}" >> results/log.csv
 done
