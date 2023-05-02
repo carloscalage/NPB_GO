@@ -27,7 +27,7 @@ for CLASS in S W A B C D E; do
     fi
 
     if [ $LANG = C ]; then
-            cd GMAP/NPB-SER
+            cd GMAP/NPB-OMP
             make clean
             make ${KERNEL}
             for i in $(seq 1 $N); do
