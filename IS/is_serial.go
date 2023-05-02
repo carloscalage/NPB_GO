@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sync"
 )
 
@@ -34,10 +35,10 @@ var key_buff1_aptr [][]int
 var bucket_ptrs [num_procs][]int
 
 var bucket_size [][]int
-var class = 'S'
+var class = os.Args[1]
 
 func main() {
-
+	fmt.Println(os.Args[1])
 	TOTAL_KEYS_LOG_2 = 0
 	MAX_KEY_LOG_2 = 0
 	NUM_BUCKETS_LOG_2 = 0
@@ -47,20 +48,20 @@ func main() {
 	fmt.Printf("IS implementation \n")
 
 	switch class {
-	case 'S':
+	case "S":
 		test_index_array = []int{48427, 17148, 23627, 62548, 4431}
 		test_rank_array = []int{0, 18, 346, 64917, 65463}
 		TOTAL_KEYS_LOG_2 = 16
 		MAX_KEY_LOG_2 = 11
 		NUM_BUCKETS_LOG_2 = 9
-	case 'W':
+	case "W":
 		test_index_array = []int{357773, 934767, 875723, 898999, 404505}
 		test_rank_array = []int{1249, 11698, 1039987, 1043896, 1048018}
 
 		TOTAL_KEYS_LOG_2 = 20
 		MAX_KEY_LOG_2 = 16
 		NUM_BUCKETS_LOG_2 = 10
-	case 'A':
+	case "A":
 		test_index_array = []int{2112377, 662041, 5336171, 3642833, 4250760}
 		test_rank_array = []int{104, 17523, 123928, 8288932, 8388264}
 
@@ -68,7 +69,7 @@ func main() {
 		MAX_KEY_LOG_2 = 19
 		NUM_BUCKETS_LOG_2 = 10
 
-	case 'B':
+	case "B":
 		test_index_array = []int{41869, 812306, 5102857, 18232239, 26860214}
 		test_rank_array = []int{33422937, 10244, 59149, 33135281, 99}
 		TOTAL_KEYS_LOG_2 = 27
@@ -109,13 +110,13 @@ func main() {
 	rank(1)
 
 	passed_verification = 0
-	if class != 'S' {
+	if class != "S" {
 		fmt.Print("\n iteration \n")
 	}
 
 	/*this is the main iteration */
 	for iteration := 1; iteration <= MAX_ITERATIONS; iteration++ {
-		if class != 'S' {
+		if class != "S" {
 			fmt.Printf("    %d\n", iteration)
 		}
 		rank(iteration)
@@ -289,7 +290,7 @@ func rank(iteration int) {
 			failed := 0
 
 			switch class {
-			case 'S':
+			case "S":
 				if i <= 2 {
 					if key_rank != test_rank_array[i]+iteration {
 						//fmt.Printf("key_rank %d different of test_rank_array[i]+iter %d at i %d \n", key_rank, test_rank_array[i]+iteration, i)
@@ -306,7 +307,7 @@ func rank(iteration int) {
 					}
 				}
 				break
-			case 'W':
+			case "W":
 				if i < 2 {
 					if key_rank != test_rank_array[i]+(iteration-2) {
 						failed = 1
@@ -321,7 +322,7 @@ func rank(iteration int) {
 					}
 				}
 				break
-			case 'A':
+			case "A":
 				if i <= 2 {
 					if key_rank != test_rank_array[i]+(iteration-1) {
 						failed = 1
@@ -336,7 +337,7 @@ func rank(iteration int) {
 					}
 				}
 				break
-			case 'B':
+			case "B":
 				if i == 1 || i == 2 || i == 4 {
 					if key_rank != test_rank_array[i]+iteration {
 						failed = 1
@@ -351,7 +352,7 @@ func rank(iteration int) {
 					}
 				}
 				break
-			case 'C':
+			case "C":
 				if i <= 2 {
 					if key_rank != test_rank_array[i]+iteration {
 						failed = 1
@@ -366,7 +367,7 @@ func rank(iteration int) {
 					}
 				}
 				break
-			case 'D':
+			case "D":
 				if i < 2 {
 					if key_rank != test_rank_array[i]+iteration {
 						failed = 1
