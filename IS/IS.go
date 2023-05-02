@@ -121,10 +121,8 @@ func main() {
 		}
 		rank(iteration)
 	}
-	fmt.Printf("\nsplitting\n")
 	//fmt.Printf("%v \n", key_array[500:550])
 	full_verify()
-	fmt.Printf("\nsplitting\n")
 	//fmt.Printf("%v \n", key_array[49200:49600])
 	/* the final printout */
 	if passed_verification != 5*MAX_ITERATIONS+1 {
@@ -427,7 +425,6 @@ func full_verify() {
 
 	//#pragma omp parallel for reduction(+:j)
 
-	fmt.Printf("%v \n", key_array[65530:])
 	for i = 1; i < NUM_KEYS; i++ {
 		if key_array[i-1] > key_array[i] {
 			//fmt.Printf("pos: %d, bigger value: %d, smaller value: %d \n", i, key_array[i-1], key_array[i])
