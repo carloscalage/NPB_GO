@@ -13,32 +13,34 @@ N=30
 
 echo >> results/log.csv
 
+if [ $LANG = C ]; then
+    cd GMAP/NPB-OMP
+    make clean
+fi
+
 for CLASS in S W A B C D E; do
     echo $CLASS
     if [ $LANG = GO ]; then
-            for i in $(seq 1 $N); do
-            echo $i
-            start=$(date +%s%N)
-            go run ${KERNEL}/${KERNEL}.go $CLASS >> output.txt
-            end=$(date +%s%N) 
-            time=$((end-start))
-            echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
-            done
+        for i in $(seq 1 $N); do
+        echo $i
+        start=$(date +%s%N)
+        go run ${KERNEL}/${KERNEL}.go $CLASS >> output.txt
+        end=$(date +%s%N) 
+        time=$((end-start))
+        echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
+        done
     fi
 
     if [ $LANG = C ]; then
-            cd GMAP/NPB-OMP
-            make clean
-            make ${KERNEL} CLASS=${CLASS}
-            for i in $(seq 1 $N); do
-            echo $i
-            start=$(date +%s%N)
-            ./bin/is.${CLASS} >> output.txt
-            end=$(date +%s%N) 
-            time=$((end-start))
-            cd ../../
-            echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
-            done
+        make ${KERNEL} CLASS=${CLASS}
+        for i in $(seq 1 $N); do
+        echo $i
+        start=$(date +%s%N)
+        ./bin/is.${CLASS} >> output.txt
+        end=$(date +%s%N) 
+        time=$((end-start))
+        echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> ../../results/log.csv
+        done
     fi
 
 done
