@@ -19,7 +19,7 @@ for CLASS in S W A B C D E; do
             for i in $(seq 1 $N); do
             echo $i
             start=$(date +%s%N)
-            go run ${KERNEL}/${KERNEL}_serial.go $CLASS >> output.txt
+            go run ${KERNEL}/${KERNEL}.go $CLASS >> output.txt
             end=$(date +%s%N) 
             time=$((end-start))
             echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
