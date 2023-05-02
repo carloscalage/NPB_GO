@@ -405,7 +405,7 @@ func full_verify() {
 	}
 
 	j = 1
-	j = (MAX_KEY + j - 1) / 2
+	j = (MAX_KEY + j - 1) / j
 	k1 = j * myid
 	k2 = k1 + j
 	if k2 > MAX_KEY {
