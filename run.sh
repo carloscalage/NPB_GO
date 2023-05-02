@@ -18,16 +18,21 @@ if [ $LANG = C ]; then
     make clean
 fi
 
+if [ $LANG = GO ]; then
+    cd IS
+fi
+
 for CLASS in S W A B C D E; do
     echo $CLASS
     if [ $LANG = GO ]; then
         for i in $(seq 1 $N); do
         echo $i
+        go build
         start=$(date +%s%N)
-        go run ${KERNEL}/${KERNEL}.go $CLASS >> output.txt
+        ./${KERNEL} ${CLASS}
         end=$(date +%s%N) 
         time=$((end-start))
-        echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
+        echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> ../results/log.csv
         done
     fi
 
@@ -36,7 +41,7 @@ for CLASS in S W A B C D E; do
         for i in $(seq 1 $N); do
         echo $i
         start=$(date +%s%N)
-        ./bin/is.${CLASS} >> output.txt
+        ./bin/is.${CLASS}
         end=$(date +%s%N) 
         time=$((end-start))
         echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> ../../results/log.csv
