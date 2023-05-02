@@ -148,12 +148,11 @@ func main() {
 			sx = sxl + sx
 			sy = syl + sy
 			m.Unlock()
-
+			m2.Lock()
 			for i := 0; i <= NQ-1; i++ {
-				m2.Lock()
 				q[i] = q[i] + qq[i]
-				m2.Unlock()
 			}
+			m2.Unlock()
 			defer wg.Done()
 
 		}(c)
