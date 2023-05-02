@@ -225,7 +225,7 @@ void rank(int iteration);
 /*****************************************************************/
 int main(int argc, char** argv){
 #if defined(DO_NOT_ALLOCATE_ARRAYS_WITH_DYNAMIC_MEMORY_AND_AS_SINGLE_DIMENSION)
-	printf(" DO_NOT_ALLOCATE_ARRAYS_WITH_DYNAMIC_MEMORY_AND_AS_SINGLE_DIMENSION mode on\n");
+	//printf(" DO_NOT_ALLOCATE_ARRAYS_WITH_DYNAMIC_MEMORY_AND_AS_SINGLE_DIMENSION mode on\n");
 #endif
 	int i, iteration, timer_on;
 	double timecounter;
@@ -276,12 +276,12 @@ int main(int argc, char** argv){
 				break;
 		};        
 
-	/* Printout initial NPB info */
+	/* Printout initial NPB info 
 	printf("\n\n NAS Parallel Benchmarks 4.1 Parallel C++ version with OpenMP - IS Benchmark\n\n");
 	printf(" Size:  %ld  (class %c)\n", (long)TOTAL_KEYS, CLASS);
 	printf(" Iterations:   %d\n", MAX_ITERATIONS);
 	printf( "\n" );
-
+*/
 	if(timer_on)timer_start( T_INITIALIZATION );
 
 	/* Generate random number sequence and subsequent keys on all procs */
@@ -298,14 +298,14 @@ int main(int argc, char** argv){
 	/* Start verification counter */
 	passed_verification = 0;
 
-	if( CLASS != 'S' ) printf( "\n   iteration\n" );
+	//if( CLASS != 'S' ) printf( "\n   iteration\n" );
 
 	/* Start timer */             
 	timer_start( T_BENCHMARKING );
 
 	/* This is the main iteration */
 	for(iteration=1; iteration<=MAX_ITERATIONS; iteration++){
-		if(CLASS != 'S')printf("        %d\n", iteration);
+	//	if(CLASS != 'S')printf("        %d\n", iteration);
 		rank( iteration );
 	}
 
@@ -321,7 +321,7 @@ int main(int argc, char** argv){
 
 	if(timer_on)timer_stop( T_TOTAL_EXECUTION );    
 
-	/* The final printout */
+	/* The final printout 
 	if(passed_verification != 5*MAX_ITERATIONS + 1){passed_verification = 0;}
 	setenv("OMP_NUM_THREADS","1",0);
 	c_print_results((char*)"IS",
@@ -346,8 +346,9 @@ int main(int argc, char** argv){
 			(char*)CS5,
 			(char*)CS6,
 			(char*)CS7);
+			*/
 
-	/* Print additional timers */
+	/* Print additional timers 
 	if(timer_on){
 		double t_total, t_percent;
 		t_total = timer_read( T_TOTAL_EXECUTION );
@@ -364,7 +365,7 @@ int main(int argc, char** argv){
 		t_percent = timecounter/t_total * 100.;
 		printf(" Sorting        : %8.3f (%5.2f%%)\n", timecounter, t_percent);
 	}
-
+*/
 	return 0;
 }
 
@@ -540,7 +541,7 @@ void full_verify(){
 		if( key_array[i-1] > key_array[i] )
 			j++;
 	if( j != 0 )
-		printf( "Full_verify: number of keys out of sort: %ld\n", (long)j );
+		//printf( "Full_verify: number of keys out of sort: %ld\n", (long)j );
 	else
 		passed_verification++;
 }
@@ -782,9 +783,8 @@ void rank(int iteration){
 					break;
 			}
 			if( failed == 1 )
-				printf( "Failed partial verification: "
-						"iteration %d, test key %d\n", 
-						iteration, (int)i );
+				
+				
 		}
 	}
 

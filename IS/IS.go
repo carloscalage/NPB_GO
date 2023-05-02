@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"sync"
 )
@@ -38,14 +37,14 @@ var bucket_size [][]int
 var class = os.Args[1]
 
 func main() {
-	fmt.Println(os.Args[1])
+	//fmt.Println(os.Args[1])
 	TOTAL_KEYS_LOG_2 = 0
 	MAX_KEY_LOG_2 = 0
 	NUM_BUCKETS_LOG_2 = 0
 
 	TOTAL_KEYS := 0
 
-	fmt.Printf("IS implementation \n")
+	//fmt.Printf("IS implementation \n")
 
 	switch class {
 	case "S":
@@ -84,12 +83,12 @@ func main() {
 		//D_test_rank_array := []int{1, 36538729, 1978098519, 2145192618, 2147425337}
 
 	}
-	fmt.Printf("%d \n", TOTAL_KEYS_LOG_2)
+	//fmt.Printf("%d \n", TOTAL_KEYS_LOG_2)
 	MAX_KEY = 1 << MAX_KEY_LOG_2
 	NUM_BUCKETS = 1 << NUM_BUCKETS_LOG_2
 
 	TOTAL_KEYS = 1 << TOTAL_KEYS_LOG_2
-	fmt.Printf("TOTALKEYS: %d \n", TOTAL_KEYS)
+	//fmt.Printf("TOTALKEYS: %d \n", TOTAL_KEYS)
 
 	NUM_KEYS = TOTAL_KEYS
 	SIZE_OF_BUFFERS = NUM_KEYS
@@ -111,13 +110,13 @@ func main() {
 
 	passed_verification = 0
 	if class != "S" {
-		fmt.Print("\n iteration \n")
+		//fmt.Print("\n iteration \n")
 	}
 
 	/*this is the main iteration */
 	for iteration := 1; iteration <= MAX_ITERATIONS; iteration++ {
 		if class != "S" {
-			fmt.Printf("    %d\n", iteration)
+			//fmt.Printf("    %d\n", iteration)
 		}
 		rank(iteration)
 	}
@@ -128,7 +127,7 @@ func main() {
 	if passed_verification != 5*MAX_ITERATIONS+1 {
 		passed_verification = 0
 	}
-	fmt.Printf("passed verification: %d \n", passed_verification)
+	//fmt.Printf("passed verification: %d \n", passed_verification)
 
 }
 
@@ -382,7 +381,7 @@ func rank(iteration int) {
 				break
 			}
 			if failed == 1 {
-				fmt.Printf("Failed partial verification: iteration %d, test key %d\n", iteration, i)
+				//fmt.Printf("Failed partial verification: iteration %d, test key %d\n", iteration, i)
 			}
 		}
 	}
@@ -433,7 +432,7 @@ func full_verify() {
 	//fmt.Printf("%d is bigger than %d at pos %d \n", key_array[33065], key_array[33065+1], 33065)
 
 	if j != 0 {
-		fmt.Printf("\nFull_verify: number of keys out of sort: %d\n", j)
+		//fmt.Printf("\nFull_verify: number of keys out of sort: %d\n", j)
 	} else {
 		passed_verification++
 	}
