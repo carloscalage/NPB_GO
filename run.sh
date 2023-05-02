@@ -31,8 +31,6 @@
 
 read -p "Qual kernel deseja executar? (EP, IS): " KERNEL
 
-read -p "Qual classe de problema deseja executar? (S, W, A, B, C, D, E): " CLASS
-
 read -p "Em qual linguagem deseja executar? (GO, C): " LANG
 
 file_name=`echo "print '$KERNEL'.lower()" | python`
@@ -44,29 +42,33 @@ N=30
 
 echo >> results/log.csv
 
-if [ $LANG == "GO" ];
-    then
-        for i in $(seq 1 $N); do
-        echo $i
-        start=$(date +%s%N)
-        go run ${KERNEL}/${KERNEL}_serial.go $CLASS
-        end=$(date +%s%N) 
-        time=$((end-start))
-        echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
-        done
-fi
+for CLASS in S W A B C D E; do
+    echo $CLASS
+    if [ $LANG == "GO" ];
+        then
+            for i in $(seq 1 $N); do
+            echo $i
+            start=$(date +%s%N)
+            go run ${KERNEL}/${KERNEL}_serial.go $CLASS >> output.txt
+            end=$(date +%s%N) 
+            time=$((end-start))
+            echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
+            done
+    fi
 
-if [ $LANG == "C" ];
-    then
-        cd GMAP/NPB-SER
-        make clean
-        make ${KERNEL}
-        for i in $(seq 1 $N); do
-        echo $i
-        start=$(date +%s%N)
-        ./bin/${KERNEL}.${CLASS}
-        end=$(date +%s%N) 
-        time=$((end-start))
-        echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
-        done
-fi
+    if [ $LANG == "C" ];
+        then
+            cd GMAP/NPB-SER
+            make clean
+            make ${KERNEL}
+            for i in $(seq 1 $N); do
+            echo $i
+            start=$(date +%s%N)
+            ./bin/${KERNEL}.${CLASS} >> output.txt
+            end=$(date +%s%N) 
+            time=$((end-start))
+            echo "${KERNEL},${CLASS},serial,${LANG},${time}" >> results/log.csv
+            done
+    fi
+
+done
