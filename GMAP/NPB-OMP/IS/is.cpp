@@ -52,7 +52,7 @@ Authors of the OpenMP code:
 /* Example:  SGI O2000:   400% slowdown with buckets (Wow!)      */
 /*****************************************************************/
 /* To disable the use of buckets, comment out the following line */
-#define USE_BUCKETS
+//#define USE_BUCKETS
 
 /******************/
 /* default values */
@@ -652,6 +652,8 @@ void rank(int iteration){
 		}
 	}
 #else /*USE_BUCKETS*/
+	INT_TYPE *work_buff;
+	int myid = 0;
 	work_buff = key_buff1_aptr[myid];
 	/* Clear the work array */
 	for( i=0; i<MAX_KEY; i++ )
