@@ -79,7 +79,7 @@ func main() {
 	dum := []float64{1.0, 1.0}
 	dum2 := []float64{1.0}
 	vranlc(0, &dum[0], dum[1], dum2)
-	var m, m2 sync.Mutex
+	var m2 sync.Mutex
 	var wg sync.WaitGroup
 	dum[0] = randlc(&dum[1], dum2[0])
 
@@ -144,11 +144,11 @@ func main() {
 
 			}
 
-			m.Lock()
+			m2.Lock()
+
 			sx = sxl + sx
 			sy = syl + sy
-			m.Unlock()
-			m2.Lock()
+
 			for i := 0; i <= NQ-1; i++ {
 				q[i] = q[i] + qq[i]
 			}
