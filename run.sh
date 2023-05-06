@@ -17,14 +17,14 @@ go build
 cd ../GMAP/NPB-OMP
 make clean
 
-for CLASS in S W A B; do
+for CLASS in S W A; do
     make ${KERNEL} CLASS=${CLASS}
 done
 
 cd ../../
 
 # Running All The Classes 
-for CLASS in S W A B; do
+for CLASS in S W A; do
     echo $CLASS
 
     for i in $(seq 1 $N); do
