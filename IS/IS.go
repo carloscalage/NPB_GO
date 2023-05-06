@@ -141,8 +141,9 @@ func use(vals ...interface{}) { //só pra matar warning de variavel não usada d
 
 func create_seq(seed, a float64) {
 	var wg sync.WaitGroup
-	wg.Add(num_procs)
-	for i := 0; i < num_procs; i++ {
+	num_procs_local := 4
+	wg.Add(num_procs_local)
+	for i := 0; i < num_procs_local; i++ {
 		go func(myid int) {
 			var x, s float64
 			var k int
@@ -150,7 +151,7 @@ func create_seq(seed, a float64) {
 			var k1, k2 int
 			an := a
 
-			mq := (NUM_KEYS + num_procs - 1) / num_procs
+			mq := (NUM_KEYS + num_procs_local - 1) / num_procs_local
 			k1 = mq * myid
 			k2 = k1 + mq
 			if k2 > NUM_KEYS {
@@ -158,7 +159,7 @@ func create_seq(seed, a float64) {
 			}
 
 			s = find_my_seed(myid,
-				num_procs,
+				num_procs_local,
 				int64(4*NUM_KEYS),
 				seed,
 				an)
