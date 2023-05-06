@@ -12,15 +12,12 @@ const r46 float64 = (r23 * r23)
 const t23 float64 = (2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0 * 2.0)
 const t46 float64 = (t23 * t23)
 
-var M, _ = strconv.ParseInt(os.Args[1], 10, 0)     //classe é dinâmica
+var class = os.Args[1]     //classe é dinâmica
 var cores, _ = strconv.ParseInt(os.Args[2], 10, 0) //cores são dinâmicos também
 
 const MK = 16
 
-var MM = (M - MK)
-var NN = (1 << MM)
-var np = NN
-var slicesize = np / int(cores)
+var M, MM, NN, np, slicesize int
 
 const NK = (1 << MK)
 const NQ = 10
@@ -75,6 +72,22 @@ func randlc(x *float64, a float64) float64 {
 }
 
 func main() {
+
+	switch class {
+	case "S":
+		M = 24
+	case "W":
+		M = 25
+	case "A":
+		M = 28
+	case "B":
+		M = 30
+	}
+
+	MM = (M - MK)
+	NN = (1 << MM)
+	np = NN
+	slicesize = np / int(cores)
 
 	dum := []float64{1.0, 1.0}
 	dum2 := []float64{1.0}
