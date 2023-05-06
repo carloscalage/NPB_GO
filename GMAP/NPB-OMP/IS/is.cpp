@@ -652,6 +652,8 @@ void rank(int iteration){
 		}
 	}
 #else /*USE_BUCKETS*/
+
+    int num_procs = 1;
 	INT_TYPE *work_buff;
 	int myid = 0;
 	work_buff = key_buff1_aptr[myid];
