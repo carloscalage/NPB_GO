@@ -1,6 +1,7 @@
 #!/bin/bash
 
 read -p "Qual kernel deseja executar? (EP, IS): " KERNEL
+read -p "Quantos cores gostaria de usar? " NUM_CORES
 
 N=30
 
@@ -38,7 +39,7 @@ for CLASS in S W A B; do
 
         echo GO
         start=$(date +%s%N)
-        ./${KERNEL} ${CLASS}
+        ./${KERNEL}/${KERNEL} ${CLASS} ${NUM_CORES}
         end=$(date +%s%N)
         time=$((end-start))
         echo "${KERNEL},${CLASS},GO,${time}" >> ../results/log.csv
