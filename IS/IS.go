@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"sync"
 )
@@ -432,7 +433,7 @@ func full_verify() {
 	//fmt.Printf("%d is bigger than %d at pos %d \n", key_array[33065], key_array[33065+1], 33065)
 
 	if j != 0 {
-		//fmt.Printf("\nFull_verify: number of keys out of sort: %d\n", j)
+		fmt.Printf("\nFull_verify: number of keys out of sort: %d\n", j)
 	} else {
 		passed_verification++
 	}
