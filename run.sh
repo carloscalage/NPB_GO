@@ -35,13 +35,13 @@ for CLASS in S W A B; do
         ./GMAP/NPB-OMP/bin/is.$CLASS
         end=$(date +%s%N)
         time=$((end-start))
-        echo "${KERNEL},${CLASS},C,${time}" >> ../results/log.csv
+        echo "${KERNEL},${CLASS},C,${time}" >> /results/log.csv
 
         echo GO
         start=$(date +%s%N)
         ./${KERNEL}/${KERNEL} ${CLASS} ${NUM_CORES}
         end=$(date +%s%N)
         time=$((end-start))
-        echo "${KERNEL},${CLASS},GO,${time}" >> ../results/log.csv
+        echo "${KERNEL},${CLASS},GO,${time}" >> /results/log.csv
     done
 done
