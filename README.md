@@ -1,6 +1,7 @@
 ### Implementações NPB em Go
 
-##Grupo Error403
+###Grupo Error403
+
 Ariam Bartsch, Carlos Calage, João Belmonte.
 
 Repositório para a cadeira de TECVII do professor Gerson Cavalheiro, onde a ideia era explorar diferentes linguagens de programação que fornecem ferramentas para implementação de paralelismo e concorrência em comparação com a linguagem de programação C. Nosso grupo decidiu utilizar a linguagem de programação Go.
